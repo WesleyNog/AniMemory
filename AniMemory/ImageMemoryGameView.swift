@@ -50,23 +50,21 @@ struct ImageMemoryGameView: View {
     
     struct CardView: View {
         var card: MemoryGame<String>.Card
-        @State private var progress = 1.0
         var body: some View {
             ZStack {
                 if card.isFlipped {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .stroke(lineWidth: lineWidth)
                     
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .trim(from: 1 - progress, to: 1)
-                        .stroke(lineWidth: lineWidth)
-                        .opacity(0.5)
-                        .padding(2.5)
-                        .onAppear {
-                            withAnimation(.linear(duration: 5)) {
-                                progress = 0
-                            }
-                        }
+                    TimelineView(.animation) { timeline in
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .trim(from: 0, to: card.bonusRemaining)
+                            .stroke(lineWidth: lineWidth)
+                            .opacity(0.5)
+                            .padding(2.5)
+                            .rotationEffect(Angle.degrees(-90))
+                            .scaleEffect(x: -1, y: 1)
+                    }
                     
                     Image(card.content)
                         .resizable()
