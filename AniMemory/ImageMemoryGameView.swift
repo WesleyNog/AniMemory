@@ -10,6 +10,10 @@ import Foundation
 
 struct ImageMemoryGameView: View {
     @ObservedObject var viewModel: ImageMemoryGame
+    @State private var offsetY: CGFloat = 0
+    @State private var opacity: Double = 1
+    @State private var showScoreEffect = false
+    
     var body: some View {
         VStack {
             Text("One Piece")
@@ -32,20 +36,54 @@ struct ImageMemoryGameView: View {
             }
             
             Spacer()
-            
-            Text("Pontuação: 0")
-                .padding()
-                .font(Font.largeTitle)
-                .foregroundColor(Color.blue)
-                .fontWeight(.semibold)
-                .onTapGesture {
-                    withAnimation(.easeOut) {
-                        viewModel.resetGame()
+            HStack {
+                Text("Pontuação:")
+                    .padding()
+                    .font(Font.largeTitle)
+                    .foregroundColor(Color.blue)
+                    .fontWeight(.semibold)
+                    .onTapGesture {
+                        withAnimation(.easeOut) {
+                            viewModel.resetGame()
+                        }
                     }
+                ZStack {
+                    if showScoreEffect {
+                        Text("\(viewModel.lastScoreGain > 0 ? "+" : "")\(viewModel.lastScoreGain)")
+                            .foregroundColor(viewModel.lastScoreGain > 0 ? .green : .red)
+                            .font(.largeTitle)
+                            .offset(y: offsetY)
+                            .opacity(opacity)
+                    }
+
+                    Text("\(viewModel.score)")
+                        .padding()
+                        .font(.largeTitle)
+                        .foregroundColor(.blue)
+                        .fontWeight(.semibold)
                 }
+            }
         }
         .padding(.horizontal, 5)
         .foregroundColor(Color.blue)
+        .onChange(of: viewModel.scoreTrigger) { _ in
+            triggerScoreAnimation()
+        }
+    }
+    
+    func triggerScoreAnimation() {
+        offsetY = 0
+        opacity = 1
+        showScoreEffect = true
+
+        withAnimation(.easeOut(duration: 0.8)) {
+            offsetY = -30
+            opacity = 0
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            showScoreEffect = false
+        }
     }
     
     struct CardView: View {
@@ -69,7 +107,8 @@ struct ImageMemoryGameView: View {
                     Image(card.content)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 75, height: 75)
+                        .frame(width: 60, height: 60)
+                    
                 } else {
                     if !card.isMatched {
                         RoundedRectangle(cornerRadius: cornerRadius)
@@ -95,6 +134,7 @@ struct ImageMemoryGameView: View {
     }
     
 }
+
 #Preview {
     ImageMemoryGameView(viewModel: ImageMemoryGame())
 }

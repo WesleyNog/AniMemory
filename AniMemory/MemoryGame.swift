@@ -22,19 +22,33 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         }
     }
     
-    mutating func choose(card: Card) {
-        print("Carta escolhida: \(card)")
-        if let chosenIndex: Int = index(of: card), !cards[chosenIndex].isFlipped, !cards[chosenIndex].isMatched {
+    mutating func choose(card: Card) -> Double? {
+        if let chosenIndex: Int = index(of: card),
+           !cards[chosenIndex].isFlipped,
+           !cards[chosenIndex].isMatched {
+            
             if let potencialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
+                
                 if cards[chosenIndex].content == cards[potencialMatchIndex].content {
+                    
                     cards[chosenIndex].isMatched = true
                     cards[potencialMatchIndex].isMatched = true
+                    
+                    let bonus1 = cards[chosenIndex].bonusRemaining
+                    let bonus2 = cards[potencialMatchIndex].bonusRemaining
+                    let averageBonus = (bonus1 + bonus2) / 2
+                    
+                    return averageBonus
                 }
+                
                 cards[chosenIndex].isFlipped = true
+                return 0
+                
             } else {
                 indexOfTheOneAndOnlyFaceUpCard = chosenIndex
             }
         }
+        return nil
     }
     
     func index(of: Card) -> Int? {
