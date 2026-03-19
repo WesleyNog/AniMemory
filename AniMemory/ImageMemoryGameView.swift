@@ -70,8 +70,6 @@ struct ImageMemoryGameView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 75, height: 75)
-//                        .rotationEffect(Angle.degrees(card.isMatched ? 360 : 0))
-//                        .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: card.isMatched)
                 } else {
                     if !card.isMatched {
                         RoundedRectangle(cornerRadius: cornerRadius)

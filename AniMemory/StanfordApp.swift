@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct StanfordApp: App {
+struct AniMemoryApp: App {
     var body: some Scene {
         WindowGroup {
             ImageMemoryGameView(viewModel: ImageMemoryGame())
